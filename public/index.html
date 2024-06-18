@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    #infoMsg {
+      display: none;
+    }
+  </style>
+  <title>Document</title>
+</head>
+
+<body>
+  <form id="myForm">
+    <input type="text" id="customText" required />
+    <input type="time" id="customTime" min="00:00" max="00:10" required />
+    <button type="submit">Set timer (max 10 min)</button>
+  </form>
+  <p id="infoMsg">Please wait for a response</p>
+</body>
+<script>
+  let customText, customTime;
+  const infoMsg = document.querySelector('#infoMsg');
+  const myForm = document.querySelector('#myForm');
+  myForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    customText = document.querySelector('#customText').value;
+    customTime = document.querySelector('#customTime').value;
+
+    const mins = customTime.split(':')[1];
+    const ms = parseInt(mins) * 60 * 1000;
+
+    if (ms === 0) return;
+    infoMsg.style.display = 'block';
+    setTimeout(() => changePage(), ms);
+  });
+
+  const changePage = async () => {
+    try {
+      let apiResponse = await fetch('/my-url');
+      apiResponse = await apiResponse.json();
+      const host = apiResponse.host;
+
+      const html = `<a href='#' onclick='generatedLinkHandler()'>
+        ${host}
+      </a>`;
+
+      infoMsg.innerHTML = html;
+    } catch (error) {
+      infoMsg.innerHTML = 'Error occured - look at the browser console';
+      console.log(error);
+    }
+  }
+
+  const generatedLinkHandler = () => {
+    const html = `<h1>USER TEXT: ${customText}</h1>`;
+    infoMsg.innerHTML = html;
+  }
+</script>
+
+</html>
